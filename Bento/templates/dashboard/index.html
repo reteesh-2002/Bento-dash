@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BENTO-DASH</title>
+    <style>
+        body { background-color: #f4f4f9; padding: 2rem; font-family: sans-serif; }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 300px); /* Your fixed size */
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .widget {
+            background: white; width: 300px; height: 300px; border-radius: 15px;
+            padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative;
+        }
+    </style>
+</head>
+<body>
+    <h1>BENTO-DASH</h1>
+    
+    <!-- Toolbar to add modules -->
+    <form method="POST" action="{% url 'add_widget' %}">
+        {% csrf_token %}
+        <button name="widget_type" value="timer" type="submit">+ Add Timer</button>
+        <button name="widget_type" value="calendar" type="submit">+ Add Calendar</button>             
+        <button name="widget_type" value="test" type="submit">+ Add test</button>
+    </form>
+
+    <!-- The Grid -->
+    <div class="bento-grid">
+        {% for widget in widgets %}
+            <div class="widget">
+                <form method="POST" action="{% url 'delete_widget' widget.id %}" style="position:absolute; top:10px; right:10px;">
+                    {% csrf_token %}
+                    <button type="submit">X</button>
+                </form>
+                
+                <!-- MODULAR INCLUDES -->
+                {% if widget.widget_type == 'timer' %}
+                    {% include 'dashboard/widgets/timer.html' %}
+                {% elif widget.widget_type == 'calendar' %}
+                    {% include 'dashboard/widgets/calendar.html' %}
+                {% elif widget.widget_type == 'test' %}
+                    {% include 'dashboard/widgets/test.html' %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

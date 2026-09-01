@@ -1,0 +1,59 @@
+<div style="text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+    <h2>Timer</h2>
+    <!-- We use the database widget.id to make this display unique! -->
+    <h1 id="time-display-{{ widget.id }}" style="font-size: 3rem; margin: 20px 0;">00:00</h1>
+    
+    <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="toggleTimer({{ widget.id }})">Start / Pause</button>
+        <button onclick="resetTimer({{ widget.id }})">Reset</button>
+    </div>
+</div>
+
+<script>
+    // 1. Create a global object to store the state of MULTIPLE timers if they exist
+    if (typeof window.bentoTimers === 'undefined') {
+        window.bentoTimers = {};
+    }
+
+    // 2. Initialize the state for THIS specific widget using its Django ID
+    if (!window.bentoTimers[{{ widget.id }}]) {
+        window.bentoTimers[{{ widget.id }}] = { seconds: 0, interval: null, isRunning: false };
+    }
+
+    // 3. Format time function
+    function updateDisplay_{{ widget.id }}() {
+        const state = window.bentoTimers[{{ widget.id }}];
+        const minutes = Math.floor(state.seconds / 60);
+        const remainder = state.seconds % 60;
+        const formatted = `${minutes}:${remainder < 10 ? '0' : ''}${remainder}`;
+        document.getElementById("time-display-{{ widget.id }}").innerText = formatted;
+    }
+
+    // 4. Start/Pause function
+    function toggleTimer(id) {
+        const state = window.bentoTimers[id];
+        if (state.isRunning) {
+            clearInterval(state.interval);
+            state.isRunning = false;
+        } else {
+            state.isRunning = true;
+            state.interval = setInterval(() => {
+                state.seconds++;
+                
+                // Update the specific timer display
+                const mins = Math.floor(state.seconds / 60);
+                const rem = state.se1conds % 60;
+                document.getElementById(`time-display-${id}`).innerText = `${mins}:${rem < 10 ? '0' : ''}${rem}`;
+            }, 1000);
+        }
+    }
+
+    // 5. Reset function
+    function resetTimer(id) {
+        const state = window.bentoTimers[id];
+        clearInterval(state.interval);
+        state.isRunning = false;
+        state.seconds = 0;
+        document.getElementById(`time-display-${id}`).innerText = "0:00";
+    }
+</script>
