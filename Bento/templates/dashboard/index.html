@@ -25,6 +25,8 @@
         <button name="widget_type" value="timer" type="submit">+ Add Timer</button>
         <button name="widget_type" value="calendar" type="submit">+ Add Calendar</button>             
         <button name="widget_type" value="test" type="submit">+ Add test</button>
+        <button name="widget_type" value="weather" type="submit">+ Add weather</button>
+
     </form>
 
     <!-- The Grid -->
@@ -43,6 +45,8 @@
                     {% include 'dashboard/widgets/calendar.html' %}
                 {% elif widget.widget_type == 'test' %}
                     {% include 'dashboard/widgets/test.html' %}
+                {% elif widget.widget_type == 'weather' %}
+                    {% include 'dashboard/widgets/weather.html' %}
                 {% endif %}
             </div>
         {% endfor %}

@@ -5,6 +5,7 @@ class Widget(models.Model):
         ('timer', 'Timer'),
         ('calendar', 'Calendar'),
         ('test','Test'),
+        ('weather','Weather'),
     ]
     widget_type = models.CharField(max_length=50, choices=WIDGET_TYPES)
     position = models.IntegerField(default=0)
