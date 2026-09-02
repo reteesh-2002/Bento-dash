@@ -1,0 +1,28 @@
+<div style="display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: space-between;">
+    
+    <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.2rem;">Random Dog</h3>
+    
+    <div style="flex-grow: 1; width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 8px; background: rgba(0,0,0,0.2); margin-bottom: 15px;">
+        <img id="dog-img-{{ widget.id }}" src="" alt="Random Dog" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+    </div>
+
+    <button onclick="generateDog_{{ widget.id }}()" style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; cursor: pointer; transition: background 0.2s;">
+        Get Dog
+    </button>
+</div>
+
+<script>
+    async function generateDog_{{ widget.id }}() {
+        const imgElement = document.getElementById("dog-img-{{ widget.id }}");
+        
+        try {
+            const response = await fetch("https://dog.ceo/api/breeds/image/random");
+            const result = await response.json();            
+            imgElement.src = result.message;
+            imgElement.style.display = "block"; 
+        } catch (error) {
+            console.error("Failed to load image:", error);
+        }
+    }
+    generateDog_{{ widget.id }}();
+</script>
