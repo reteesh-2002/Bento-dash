@@ -16,15 +16,12 @@
             min-height: 100vh; 
         }
 
-        /* Top-Right Container */
         .settings-wrapper {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 10;
         }
-
-        /* Settings Gear Button */
         .settings-btn {
             background: rgba(18, 20, 24, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -48,60 +45,138 @@
             display: block;
         }
 
-        /* Hidden Module Menu */
-        .settings-panel {
-            display: none;
+        .settings-modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-modal-overlay.show {
+            display: flex;
+        }
+
+        .settings-box {
+            background: rgba(18, 20, 24, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            width: 80%;
+            max-width: 1000px;
+            height: 70vh;
+            display: flex; /* Left and Right split */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-btn {
             position: absolute;
-            top: 55px;
-            right: 0;
-            background: rgba(18, 20, 24, 0.9);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 16px;
-            width: 200px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Class toggled by JavaScript */
-        .settings-panel.show {
-            display: block;
-        }
-
-        .settings-panel h3 {
-            margin: 0 0 12px 0;
-            font-size: 13px;
+            top: 15px;
+            right: 20px;
+            background: transparent;
             color: #94a3b8;
-            text-transform: uppercase;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 20;
+        }
+        .close-btn:hover { color: #fff; }
+
+        /* Sidebar (Left Side) */
+        .settings-sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .settings-sidebar h2 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 20px;
             letter-spacing: 0.05em;
         }
 
-        /* Module Buttons inside Settings */
-        .settings-panel form {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .tab-btn {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            padding: 12px 16px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .settings-panel form button {
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        /* Main Content (Right Side) */
+        .settings-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .tab-pane {
+            display: none; /* Hide all tabs by default */
+            color: #e2e8f0;
+        }
+
+        .tab-pane.active {
+            display: block; /* Show active tab */
+        }
+
+        .tab-pane h3 {
+            margin-top: 0;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Widget Add Buttons Grid */
+        .widget-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .widget-form-grid button {
             background: rgba(255, 255, 255, 0.08);
             color: #e2e8f0;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 14px;
-            border-radius: 8px;
-            text-align: left;
+            padding: 20px 15px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: background 0.2s ease, border-color 0.2s ease;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
-        .settings-panel form button:hover {
+        .widget-form-grid button:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
-        /* Bento Grid */
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, 300px);
@@ -122,38 +197,55 @@
 </head>
 <body>
 
-    <!-- Settings Wrapper -->
-    <div class="settings-wrapper" id="settingsContainer">
-        <button type="button" class="settings-btn" onclick="toggleSettings()">
+    <div class="settings-wrapper">
+        <button type="button" class="settings-btn" onclick="openSettings()">
             <img src="{% static 'dashboard/settings.png' %}" alt="Settings">
         </button>
+    </div>
 
-        <!-- Hidden Menu with Add Widget buttons -->
-        <div id="settingsPanel" class="settings-panel">
-            <h3>Add Modules</h3>
-            <form method="POST" action="{% url 'add_widget' %}">
-                {% csrf_token %}
-                <button name="widget_type" value="timer" type="submit">+ Timer</button>
-                <button name="widget_type" value="calendar" type="submit">+ Calendar</button>             
-                <button name="widget_type" value="test" type="submit">+ Test</button>
-                <button name="widget_type" value="weather" type="submit">+ Weather</button>
-                <button name="widget_type" value="randomDog" type="submit">+ Random Dog</button>
-            </form>
+    <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeOnOutside(event)">
+        <div class="settings-box">
+            <button class="close-btn" onclick="closeSettings()">✕</button>
+
+            <div class="settings-sidebar">
+                <h2>Menu</h2>
+                <button class="tab-btn active" onclick="switchTab(event, 'widgetsTab')">Widgets</button>
+                <button class="tab-btn" onclick="switchTab(event, 'wallpaperTab')">Wallpaper</button>
+            </div>
+
+            <div class="settings-content">
+                
+                <div id="widgetsTab" class="tab-pane active">
+                    <h3>Add Modules</h3>
+                    <form method="POST" action="{% url 'add_widget' %}" class="widget-form-grid">
+                        {% csrf_token %}
+                        <button name="widget_type" value="timer" type="submit">+ Timer</button>
+                        <button name="widget_type" value="calendar" type="submit">+ Calendar</button>             
+                        <button name="widget_type" value="test" type="submit">+ Test</button>
+                        <button name="widget_type" value="weather" type="submit">+ Weather</button>
+                        <button name="widget_type" value="randomDog" type="submit">+ Random Dog</button>
+                    </form>
+                </div>
+
+                <div id="wallpaperTab" class="tab-pane">
+                    <h3>Change Wallpaper</h3>
+                    <p>Wallpaper settings and upload buttons can go here.</p>
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <h1>BENTO-DASH</h1>
+    <h1 style="color: white;">BENTO-DASH</h1>
 
-    <!-- The Grid -->
     <div class="bento-grid">
         {% for widget in widgets %}
             <div class="widget">
                 <form method="POST" action="{% url 'delete_widget' widget.id %}" style="position:absolute; top:10px; right:10px;">
                     {% csrf_token %}
-                    <button type="submit">X</button>
+                    <button type="submit" style="background: rgba(255,255,255,0.1); border:none; color:white; border-radius:50%; width:24px; height:24px; cursor:pointer;">X</button>
                 </form>
                 
-                <!-- MODULAR INCLUDES -->
                 {% if widget.widget_type == 'timer' %}
                     {% include 'dashboard/widgets/timer.html' %}
                 {% elif widget.widget_type == 'calendar' %}
@@ -170,19 +262,32 @@
     </div>
 
     <script>
-        function toggleSettings() {
-            const panel = document.getElementById("settingsPanel");
-            panel.classList.toggle("show");
+        const modalOverlay = document.getElementById("settingsModalOverlay");
+
+        function openSettings() {
+            modalOverlay.classList.add("show");
         }
 
-        // Close the panel if clicking anywhere else on the screen
-        document.addEventListener("click", function(event) {
-            const container = document.getElementById("settingsContainer");
-            const panel = document.getElementById("settingsPanel");
-            if (!container.contains(event.target)) {
-                panel.classList.remove("show");
+        function closeSettings() {
+            modalOverlay.classList.remove("show");
+        }
+
+        function closeOnOutside(event) {
+            if (event.target === modalOverlay) {
+                closeSettings();
             }
-        });
+        }
+
+        function switchTab(event, tabId) {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
     </script>
 </body>
 </html>
